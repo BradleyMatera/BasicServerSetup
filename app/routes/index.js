@@ -21,7 +21,7 @@ router.get('/:city', (req, res) => {
     // dataStore.filter() creates a new array with all elements that match the city parameter
     
     if (cityData.length > 0) {
-        // If cityData array is not empty, it means we found matching data
+        // If cityData array is not empty, it means matching data was found
         res.status(200).json(cityData); // Sending JSON response with city data
         // HTTP Status 200 means the request was successful
         // The response contains the cityData array in JSON format
@@ -39,15 +39,31 @@ router.post('/', (req, res) => {
     const newData = req.body; // Extracting data from the request body
     // req.body contains the data sent by the client in a POST request
     
-    if (!newData.id || !newData.city || !newData.value) { // Basic validation
-        // Check if all required fields (id, city, value) are present in the request body
-        return res.status(400).json({ message: 'ID, City, and Value are required' });
-        // HTTP Status 400 means the request is invalid
-        // The response contains a JSON object with an error message
+    if (Array.isArray(newData)) { 
+        // Check if the incoming data is an array
+        // I chose array because it is easier to handle multiple objects, but it can be a single object too
+        for (let entry of newData) { 
+            // Iterating over each object in the array
+            if (!entry.id || !entry.city || !entry.value) { 
+                // Check if all required fields (id, city, value) are present in each object
+                return res.status(400).json({ message: 'Each entry must include ID, City, and Value' });
+                // HTTP Status 400 means the request is invalid
+                // The response contains a JSON object with an error message
+            }
+        }
+        dataStore.push(...newData); // Adding all valid entries to the data store
+        // The spread operator (...) is used to add all elements of the newData array to dataStore
+    } else { 
+        // If the incoming data is not an array, treat it as a single object
+        if (!newData.id || !newData.city || !newData.value) { 
+            // Basic validation for a single object
+            return res.status(400).json({ message: 'ID, City, and Value are required' });
+            // HTTP Status 400 means the request is invalid
+            // The response contains a JSON object with an error message
+        }
+        dataStore.push(newData); // Adding new data to the store
+        // dataStore.push() adds the new data to the end of the dataStore array
     }
-    
-    dataStore.push(newData); // Adding new data to the store
-    // dataStore.push() adds the new data to the end of the dataStore array
     
     res.status(201).json(newData); // Sending JSON response with status 201 (Created)
     // HTTP Status 201 means the request was successful and a new resource was created
@@ -68,7 +84,7 @@ router.put('/:id', (req, res) => {
     // parseInt(id) converts the id parameter from string to integer
     
     if (index !== -1) {
-        // If index is not -1, it means we found the item to update
+        // If index is not -1, it means the item to update was found
         dataStore[index] = { ...dataStore[index], ...updatedData }; // Merging old data with updated data
         // { ...dataStore[index], ...updatedData } creates a new object by merging the old data with the updated data
         
@@ -94,7 +110,7 @@ router.delete('/:id', (req, res) => {
     // parseInt(id) converts the id parameter from string to integer
     
     if (index !== -1) {
-        // If index is not -1, it means we found the item to delete
+        // If index is not -1, it means the item to delete was found
         const deletedData = dataStore.splice(index, 1); // Removing item from data store
         // dataStore.splice(index, 1) removes one element at the specified index
         // The removed element is returned as an array with one element
