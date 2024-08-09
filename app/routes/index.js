@@ -2,7 +2,7 @@ const express = require('express'); // Importing express module
 const router = express.Router(); // Creating router object using express.Router()
 
 let dataStore = []; // In-memory data store for simplicity
-
+ //
 // Route to handle GET requests at the base URL ('/api')
 // This endpoint returns all data stored in the dataStore array
 router.get('/', (req, res) => {
