@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-gray-100">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Employee Time Tracking</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="h-full flex items-center justify-center">
+  <div class="container mx-auto p-4">
+    <!-- Registration Form -->
+    <div id="register-section" class="mb-8">
+      <h2 class="text-2xl font-bold mb-4">Register</h2>
+      <form id="register-form" class="space-y-4">
+        <div>
+          <label class="block text-gray-700">Username</label>
+          <input type="text" id="register-username" class="mt-1 block w-full border-gray-300 rounded-md" placeholder="Enter your username" required />
+        </div>
+        <div>
+          <label class="block text-gray-700">Password</label>
+          <input type="password" id="register-password" class="mt-1 block w-full border-gray-300 rounded-md" title="Enter your password" placeholder="Enter your password" required />
+        </div>
+        <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-md">Register</button>
+      </form>
+    </div>
+
+    <!-- Login Form -->
+    <div id="login-section" class="mb-8">
+      <h2 class="text-2xl font-bold mb-4">Login</h2>
+      <form id="login-form" class="space-y-4">
+        <div>
+          <label class="block text-gray-700">Username</label>
+          <input type="text" id="login-username" class="mt-1 block w-full border-gray-300 rounded-md" title="Enter your username" placeholder="Enter your username" required />
+        </div>
+        <div>
+          <label class="block text-gray-700">Password</label>
+          <input type="password" id="login-password" class="mt-1 block w-full border-gray-300 rounded-md" title="Enter your password" placeholder="Enter your password" required />
+        </div>
+        <button type="submit" class="w-full bg-green-500 text-white py-2 rounded-md">Login</button>
+      </form>
+    </div>
+
+    <!-- Time Tracking Section -->
+    <div id="time-tracking-section" class="hidden mb-8">
+      <h2 class="text-2xl font-bold mb-4">Time Tracking</h2>
+      <div class="flex space-x-4 mb-4">
+        <button id="clock-in-btn" class="w-full bg-blue-500 text-white py-2 rounded-md">Clock In</button>
+        <button id="clock-out-btn" class="w-full bg-red-500 text-white py-2 rounded-md">Clock Out</button>
+      </div>
+      <button id="view-timesheet-btn" class="w-full bg-gray-500 text-white py-2 rounded-md">View Timesheet</button>
+      <div id="timesheet" class="mt-4"></div>
+      <button id="logout-btn" class="w-full bg-yellow-500 text-white py-2 rounded-md mt-4">Logout</button>
+    </div>
+
+    <!-- Notifications -->
+    <div id="notification" class="fixed top-4 right-4"></div>
+  </div>
+
+  <!-- JavaScript -->
+  <script>
+    const API_BASE_URL = 'http://localhost:3000/api';
+
+    let userId = null;
+
+    // Utility function to show notifications
+    function showNotification(message, type = 'info') {
+      const notification = document.getElementById('notification');
+      notification.innerHTML = `
+        <div class="bg-${type === 'error' ? 'red' : 'green'}-500 text-white px-4 py-2 rounded-md">
+          ${message}
+        </div>
+      `;
+      setTimeout(() => {
+        notification.innerHTML = '';
+      }, 3000);
+    }
+
+    // Handle Registration
+    document.getElementById('register-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = document.getElementById('register-username').value;
+      const password = document.getElementById('register-password').value;
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password }),
+        });
+        const data = await response.json();
+        if (response.ok) {
+          showNotification(data.message, 'success');
+        } else {
+          showNotification(data.message, 'error');
+        }
+      } catch (error) {
+        showNotification('An error occurred', 'error');
+        console.error('Registration error:', error);
+      }
+    });
+
+    // Handle Login
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = document.getElementById('login-username').value;
+      const password = document.getElementById('login-password').value;
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password }),
+        });
+        const data = await response.json();
+        if (response.ok) {
+          userId = data.userId;
+          showNotification(data.message, 'success');
+          document.getElementById('login-section').classList.add('hidden');
+          document.getElementById('register-section').classList.add('hidden');
+          document.getElementById('time-tracking-section').classList.remove('hidden');
+        } else {
+          showNotification(data.message, 'error');
+        }
+      } catch (error) {
+        showNotification('An error occurred', 'error');
+        console.error('Login error:', error);
+      }
+    });
+
+    // Handle Clock In
+    document.getElementById('clock-in-btn').addEventListener('click', async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/clockin`, {
+          method: 'POST',
+          headers: { 'x-user-id': userId },
+        });
+        const data = await response.json();
+        if (response.ok) {
+          showNotification(data.message, 'success');
+        } else {
+          showNotification(data.message, 'error');
+        }
+      } catch (error) {
+        showNotification('An error occurred', 'error');
+        console.error('Clock In error:', error);
+      }
+    });
+
+    // Handle Clock Out
+    document.getElementById('clock-out-btn').addEventListener('click', async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/clockout`, {
+          method: 'POST',
+          headers: { 'x-user-id': userId },
+        });
+        const data = await response.json();
+        if (response.ok) {
+          showNotification(data.message, 'success');
+        } else {
+          showNotification(data.message, 'error');
+        }
+      } catch (error) {
+        showNotification('An error occurred', 'error');
+        console.error('Clock Out error:', error);
+      }
+    });
+
+    // Handle View Timesheet
+    document.getElementById('view-timesheet-btn').addEventListener('click', async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/timesheet`, {
+          method: 'GET',
+          headers: { 'x-user-id': userId },
+        });
+        const data = await response.json();
+        if (response.ok) {
+          const timesheetDiv = document.getElementById('timesheet');
+          if (data.length === 0) {
+            timesheetDiv.innerHTML = '<p class="text-gray-700">No time entries found.</p>';
+          } else {
+            timesheetDiv.innerHTML = `
+              <table class="w-full text-left">
+                <thead>
+                  <tr>
+                    <th class="border px-4 py-2">Clock In</th>
+                    <th class="border px-4 py-2">Clock Out</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${data
+                    .map(
+                      (entry) => `
+                        <tr>
+                          <td class="border px-4 py-2">${new Date(entry.clockIn).toLocaleString()}</td>
+                          <td class="border px-4 py-2">${entry.clockOut ? new Date(entry.clockOut).toLocaleString() : 'N/A'}</td>
+                        </tr>
+                      `
+                    )
+                    .join('')}
+                </tbody>
+              </table>
+            `;
+          }
+        } else {
+          showNotification(data.message, 'error');
+        }
+      } catch (error) {
+        showNotification('An error occurred', 'error');
+        console.error('View Timesheet error:', error);
+      }
+    });
+
+    // Handle Logout
+    document.getElementById('logout-btn').addEventListener('click', () => {
+      userId = null;
+      document.getElementById('login-section').classList.remove('hidden');
+      document.getElementById('register-section').classList.remove('hidden');
+      document.getElementById('time-tracking-section').classList.add('hidden');
+      document.getElementById('timesheet').innerHTML = '';
+      showNotification('Logged out successfully', 'success');
+    });
+  </script>
+</body>
+</html>

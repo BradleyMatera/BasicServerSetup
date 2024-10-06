@@ -1,19 +1,23 @@
 {
-  "name": "backendstuff",
+  "name": "employee-time-tracking",
   "version": "1.0.0",
-  "main": "index.js",
+  "description": "Basic Employee Time Tracking Application Backend",
+  "main": "app/app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server",
-    "dev": "nodemon server"
+    "start": "node app/app.js",
+    "dev": "nodemon app/app.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
   "dependencies": {
-    "dotenv": "^16.4.5",
-    "express": "^4.19.2",
-    "nodemon": "^3.1.4"
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
   }
 }
