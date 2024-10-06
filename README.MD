@@ -34,11 +34,11 @@ Frontend
 
 1️⃣ Clone the Repository
 
-git clone https://github.com/your-repo/employee-time-tracking.git
+git clone https://github.com/BradleyMatera/BasicServerSetup.git
 
 2️⃣ Navigate to the Project Directory
 
-cd employee-time-tracking
+cd BasicServerSetup
 
 3️⃣ Install Backend Dependencies
 
@@ -103,7 +103,7 @@ It will open in your browser automatically.
 
 📁 Project Structure
 
-project-root/
+BasicServerSetup/
 ├── 📄 .env
 ├── 📄 package.json
 ├── 📁 app/
@@ -236,7 +236,7 @@ This project is licensed under the MIT License.
 For any questions or suggestions, feel free to open an issue or contact me:
 
 	•	Email: bradmatera@gmail.com
-	•	GitHub: github.com/your-github-username
+	•	GitHub: github.com/BradleyMatera
 
 🙏 Acknowledgements
 
