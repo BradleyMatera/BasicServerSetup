@@ -5,7 +5,8 @@
   "main": "app/app.js",
   "scripts": {
     "start": "node app/app.js",
-    "dev": "nodemon app/app.js"
+    "dev": "nodemon app/app.js",
+    "deploy": "gh-pages -d frontend"
   },
   "keywords": [],
   "author": "",
@@ -18,6 +19,7 @@
     "morgan": "^1.10.0"
   },
   "devDependencies": {
+    "gh-pages": "^4.0.0",
     "nodemon": "^3.0.1"
   }
 }
