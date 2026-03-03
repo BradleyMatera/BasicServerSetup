@@ -3,6 +3,5 @@
 ## How to test
 
 ## Checklist
-- [ ] Server starts without errors (`npm run dev`)
-- [ ] No `.env` files committed
+- [ ] No `.env` committed
 - [ ] README updated if behavior changed
