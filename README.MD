@@ -1,256 +1,120 @@
-🕒✨ Employee Time Tracking Application
+# Employee Time Tracking
 
-<div align="center">
+A simple Express backend with a static HTML frontend for tracking employee work hours. Supports user registration, login, clock-in/clock-out, and timesheet retrieval. Data is stored in-memory (no database required).
 
+## Tech Stack
 
-An elegant and efficient solution for tracking employee work hours.
+- **Runtime:** Node.js
+- **Framework:** Express 4
+- **Auth / Password hashing:** bcryptjs
+- **HTTP utilities:** cors, morgan, dotenv
 
-</div>
+## Prerequisites
 
+- Node.js v14 or higher
+- npm (comes with Node.js)
 
-🌟 Features
+## Getting Started
 
-	•	🔒 User Authentication: Secure registration and login functionality.
-	•	⏱️ Time Tracking: Easily clock in and clock out.
-	•	📅 Timesheet Retrieval: View and manage your time entries.
-	•	🌐 Frontend Interface: Sleek design using HTML and Tailwind CSS.
-	•	🚀 Backend API: Robust RESTful API built with Express.js.
-	•	🔄 CORS Enabled: Cross-Origin Resource Sharing support.
-	•	💾 In-Memory Data Storage: Simplified data handling for demonstration purposes.
-
-🛠️ Tech Stack
-
-Backend
-
-Frontend
-
-📋 Prerequisites
-
-	•	Node.js (v14.x or higher)
-	•	npm (comes with Node.js)
-	•	Git (optional, for cloning the repository)
-
-📥 Installation
-
-1️⃣ Clone the Repository
-
+```bash
+# 1. Clone the repository
 git clone https://github.com/BradleyMatera/BasicServerSetup.git
-
-2️⃣ Navigate to the Project Directory
-
 cd BasicServerSetup
 
-3️⃣ Install Backend Dependencies
-
+# 2. Install dependencies
 npm install
 
-4️⃣ Set Up Environment Variables
+# 3. Set up environment variables
+cp .env.example .env
+# Edit .env and fill in your values
 
-	•	Create a .env file in the root directory.
-	•	Add the following content:
-
-PORT=3000
-
-
-
-🚀 Running the Application
-
-🎯 Running the Backend
-
-🔧 Development Mode (with Nodemon)
-
+# 4. Start the development server
 npm run dev
+```
 
-🏭 Production Mode
+The server starts at `http://localhost:3000` (or the `PORT` value in your `.env`).
 
-npm start
+## Environment Variables
 
-The backend server will start running at http://localhost:3000.
+Copy `.env.example` to `.env` and set the following values:
 
-🎨 Running the Frontend
+| Variable     | Description                    | Default |
+|--------------|--------------------------------|---------|
+| `PORT`       | Port the server listens on     | `3000`  |
+| `JWT_SECRET` | Secret used for future JWT use | —       |
 
-🌐 Using http-server (Recommended)
+## API Routes
 
-	1.	Install http-server globally
+Base URL: `http://localhost:3000/api`
 
-npm install -g http-server
+### Authentication
 
+| Method | Route       | Description                        | Auth required |
+|--------|-------------|------------------------------------|---------------|
+| POST   | `/register` | Register a new user                | No            |
+| POST   | `/login`    | Log in and receive your user ID    | No            |
 
-	2.	Navigate to the frontend/ directory
+**Register / Login request body:**
+```json
+{
+  "username": "your_username",
+  "password": "your_password"
+}
+```
 
-cd frontend
+### Time Tracking
 
+Authenticated routes require the `x-user-id` header set to the numeric user ID returned by `/login`.
 
-	3.	Start the Server
+| Method | Route        | Description                  | Auth required |
+|--------|--------------|------------------------------|---------------|
+| POST   | `/clockin`   | Record a clock-in timestamp  | Yes           |
+| POST   | `/clockout`  | Record a clock-out timestamp | Yes           |
+| GET    | `/timesheet` | Retrieve all time entries    | Yes           |
 
-http-server -c-1
+**Auth header:**
+```
+x-user-id: <your-user-id>
+```
 
+## How Auth Works
 
-	4.	Access the Frontend
-Open http://localhost:8080 (or the port shown in the terminal) in your browser.
+After a successful `POST /api/login`, the server returns the user's numeric ID. Pass that ID in the `x-user-id` header on every subsequent authenticated request. The `authMiddleware.js` validates the header and attaches the user object to `req.user`.
 
-🔥 Using Live Server Extension (Visual Studio Code)
+## Project Structure
 
-	1.	Install Live Server
-	•	Go to the Extensions tab in VS Code.
-	•	Search for “Live Server” by Ritwick Dey.
-	•	Install it.
-	2.	Open index.html
-	•	Right-click on index.html in the frontend/ directory.
-	•	Select “Open with Live Server”.
-	3.	Access the Frontend
-It will open in your browser automatically.
-
-📁 Project Structure
-
+```
 BasicServerSetup/
-├── 📄 .env
-├── 📄 package.json
-├── 📁 app/
-│   ├── 📄 app.js
-│   ├── 📁 models/
-│   │   ├── 📄 userModel.js
-│   │   └── 📄 timeEntryModel.js
-│   ├── 📁 controllers/
-│   │   ├── 📄 userController.js
-│   │   └── 📄 timeController.js
-│   ├── 📁 routes/
-│   │   └── 📄 index.js
-│   └── 📁 utils/
-│       └── 📄 authMiddleware.js
-└── 📁 frontend/
-    └── 📄 index.html
+├── .env.example          # Safe-to-commit env template
+├── package.json
+├── app/
+│   ├── app.js            # Express app setup & error handler
+│   ├── controllers/
+│   │   ├── userController.js
+│   │   └── timeController.js
+│   ├── models/
+│   │   ├── userModel.js       # In-memory user store
+│   │   └── timeEntryModel.js  # In-memory timesheet store
+│   ├── routes/
+│   │   └── index.js
+│   └── utils/
+│       └── authMiddleware.js
+└── frontend/
+    └── index.html
+```
 
-	•	app/: Contains the backend application code.
-	•	frontend/: Contains the frontend files.
+## Scripts
 
-📚 API Documentation
+| Script           | Command                    | Description                         |
+|------------------|----------------------------|-------------------------------------|
+| `npm run dev`    | `nodemon app/app.js`       | Start server with auto-reload       |
+| `npm start`      | `node app/app.js`          | Start server (production)           |
+| `npm run deploy` | `gh-pages -d frontend`     | Deploy frontend to GitHub Pages     |
 
-🌐 Base URL
-
-http://localhost:3000/api
-
-🔑 Endpoints
-
-📝 Register
-
-	•	URL: /register
-	•	Method: POST
-	•	Headers: Content-Type: application/json
-	•	Body:
-
-{
-  "username": "your_username",
-  "password": "your_password"
-}
-
-
-
-🔐 Login
-
-	•	URL: /login
-	•	Method: POST
-	•	Headers: Content-Type: application/json
-	•	Body:
-
-{
-  "username": "your_username",
-  "password": "your_password"
-}
-
-
-
-🟢 Clock In
-
-	•	URL: /clockin
-	•	Method: POST
-	•	Headers: x-user-id: YOUR_USER_ID
-
-🔴 Clock Out
-
-	•	URL: /clockout
-	•	Method: POST
-	•	Headers: x-user-id: YOUR_USER_ID
-
-📅 Get Timesheet
-
-	•	URL: /timesheet
-	•	Method: GET
-	•	Headers: x-user-id: YOUR_USER_ID
-
-💻 Frontend Usage
-
-	1.	Access the Frontend
-Open http://localhost:8080 in your browser.
-	2.	Register a New User
-	•	Fill in the Username and Password fields under Register.
-	•	Click the Register button.
-	•	A notification will inform you of the registration status.
-	3.	Login
-	•	Under Login, enter the Username and Password of an existing account.
-	•	Click the Login button.
-	•	Upon successful login, the Time Tracking section will become visible.
-	4.	Clock In
-	•	Click the Clock In button to start your work session.
-	•	A notification will confirm the clock-in time.
-	5.	Clock Out
-	•	Click the Clock Out button to end your work session.
-	•	A notification will confirm the clock-out time.
-	6.	View Timesheet
-	•	Click the View Timesheet button to see all your time entries.
-	•	The timesheet will display a table of clock-in and clock-out times.
-	7.	Logout
-	•	Click the Logout button to end your session.
-	•	You will be redirected back to the login and registration forms.
-
-🎯 Future Improvements
-
-	•	🗄️ Data Persistence: Integrate a database (e.g., MongoDB) for persistent data storage.
-	•	🔑 Authentication Tokens: Implement JWT for secure authentication.
-	•	🎨 Frontend Enhancement: Convert the frontend to React or Next.js.
-	•	🛡️ Input Validation: Add validation for form inputs on both client and server sides.
-	•	🐞 Error Handling: Improve error messages and handling mechanisms.
-	•	📱 Responsive Design: Enhance the UI for better mobile support.
-	•	✅ Unit Testing: Add tests for both backend and frontend components.
-
-👨‍💻 Author
-
-<div align="center">
-
+## Author
 
 Bradley Matera
 
-Full Sail University Student
+## License
 
-Amateur Back End Developer / Front End Developer
-
-</div>
-
-
-📄 License
-
-This project is licensed under the MIT License.
-
-📬 Contact
-
-For any questions or suggestions, feel free to open an issue or contact me:
-
-	•	Email: bradmatera@gmail.com
-	•	GitHub: github.com/BradleyMatera
-
-🙏 Acknowledgements
-
-	•	Node.js
-	•	Express.js
-	•	Tailwind CSS
-	•	Full Sail University
-	•	Community Contributors
-
-
-
-<div align="center">
-
-
-Made with ❤️ by Bradley Matera
-
-</div>
+ISC
